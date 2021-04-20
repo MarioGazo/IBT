@@ -11,9 +11,13 @@ class Base(Tk):
     Base class represents base picture on which elements are put and moved
     """
     DEBUG = False  # TODO set False
+    """ Whether debugging is active """
     SQUARE_SIZE = 30
-    UPDATES = 3  # Of the picture per second
+    """ Approximate cell width and height """
+    UPDATES = 3
+    """ Number of changes per second """
     elements = []
+    """ Elements that are on the base image """
 
     def __init__(self, path: str) -> None:
         """
@@ -33,6 +37,7 @@ class Base(Tk):
         except UnidentifiedImageError:
             raise Exception("File is not an image")
 
+        # Set the base image and keypress callback
         self.width, self.height = img_file.size
         self.canvas = Canvas(self, width=self.width, height=self.height, background='white', borderwidth=0)
         self.canvas.bind("<KeyPress>", self.keydown)
@@ -64,6 +69,7 @@ class Base(Tk):
         :return: None
         """
         try:
+            # Map the effects to pressed keys
             self.effect = {
                 '1': Effects.RANDOM,
                 '2': Effects.ARRANGE,
@@ -72,7 +78,8 @@ class Base(Tk):
                 '0': Effects.PAUSE
             }[event.char]
         except KeyError:
-            return
+            # Didn't press an effect key, ignore
+            pass
         finally:
             if self.DEBUG:
                 print("Key press: ", event.char)
@@ -92,6 +99,8 @@ class Base(Tk):
         for e in self.elements:
             if e.x == x and e.y == y:
                 return False
+
+        # Cell is ok
         return True
 
     def get_free_cell(self) -> tuple:
@@ -99,8 +108,11 @@ class Base(Tk):
         Generates tuple of coordinates of random free cell
         :return: tuple of coordinates (x,y)
         """
+        # Get random cell
         random_x = randrange(1, self.cells_x - 1)
         random_y = randrange(1, self.cells_y - 1)
+
+        # Find random cell that can be taken over
         while not self.cell_ok(random_x, random_y):
             random_x = randrange(1, self.cells_x - 1)
             random_y = randrange(1, self.cells_y - 1)
@@ -113,10 +125,10 @@ class Base(Tk):
         :param elem_type: Type of elements
         :return: None
         """
+        # Generate count amount of elements of elem_type
         for _ in range(count):
             random_x, random_y = self.get_free_cell()
-            element = Element(self, random_x, random_y, elem_type)
-            self.elements.append(element)
+            self.elements.append(Element(self, random_x, random_y, elem_type))
 
     def generate_elements(self, count: int) -> None:
         """
@@ -132,6 +144,7 @@ class Base(Tk):
         if active_cells < coverage:
             raise ValueError(f"Picture is too small. Active cells = {active_cells}. Cells to cover {coverage}")
 
+        # Generate the same amount of elements of type letter and number
         self.generate_set(count, ElementTypes.LETTER)
         self.generate_set(count, ElementTypes.NUMBER)
 
@@ -142,6 +155,7 @@ class Base(Tk):
         :return: None
         """
         try:
+            # Map the effects to functions, call the appropriate one
             {
                 Effects.RANDOM: self.move_4_ways,
                 Effects.ARRANGE: self.move_4_ways,
@@ -149,23 +163,45 @@ class Base(Tk):
                 Effects.SCATTER: self.scatter,
             }[self.effect]()
         except KeyError:
+            # Pause effect is active, ignore
             pass
         finally:
+            # Plan the next iteration
             self.after(round(1000/self.UPDATES), self.movement)
 
     def try_right(self, elem: Element) -> bool or None:
+        """
+        Try to move the element to the right
+        :param elem: element to move
+        :return: True if the movement was made, None if not
+        """
         if self.cell_ok(elem.x + 1, elem.y):
             return elem.move(Ways.RIGHT)
 
     def try_left(self, elem: Element) -> bool or None:
+        """
+        Try to move the element to the left
+        :param elem: element to move
+        :return: True if the movement was made, None if not
+        """
         if self.cell_ok(elem.x - 1, elem.y):
             return elem.move(Ways.LEFT)
 
     def try_up(self, elem: Element) -> bool or None:
+        """
+        Try to move the element upwards
+        :param elem: element to move
+        :return: True if the movement was made, None if not
+        """
         if self.cell_ok(elem.x, elem.y - 1):
             return elem.move(Ways.UP)
 
     def try_down(self, elem: Element) -> bool or None:
+        """
+        Try to move the element downwards
+        :param elem: element to move
+        :return: True if the movement was made, None if not
+        """
         if self.cell_ok(elem.x, elem.y + 1):
             return elem.move(Ways.DOWN)
 
@@ -173,23 +209,31 @@ class Base(Tk):
         """
         Generates array of ways that the element can move in a random order
         :param e: considered element
-        :return: array of ways
+        :return: shuffled array of ways
         """
         if self.effect is Effects.ARRANGE:
+            # Arrange effect is active
             if e.elem_type == ElementTypes.LETTER:
+                # Letter can't move to the left
                 options = range(0, 3)
             else:
+                # Number can't move to the right
                 options = range(1, 4)
         else:
+            # Random effect is active, element can move to any direction
             options = range(0, 4)
+
+        # Shuffle the directions
         return sample(options, len(options))
 
     def move_4_ways(self) -> None:
         """
+        Random/Arrange effect
         Goes through all existing elements and moves them to right, left, up or down,
         either randomly or based on the type of the element
         :return: None
         """
+        # Map of the ways to keys from get_options function
         ways = {
             0: lambda x: self.try_right(x),
             1: lambda x: self.try_up(x),
@@ -197,9 +241,15 @@ class Base(Tk):
             3: lambda x: self.try_left(x)
         }
 
+        # Iterate thgough all elements, get
         for e in self.elements:
+            # Get the movement options, this is where the two effects are distinguished
             options = self.get_options(e)
+
+            # Try to make the moves
             for option in options:
+
+                # Move was made
                 if ways[option](e):
                     break
 
@@ -208,9 +258,12 @@ class Base(Tk):
         Effect based on type of the elements, the point is to swap position of two elements of different type
         :return: None
         """
+        # Create a copy of the elements aray, so elements can be popped
         elements_copy = self.elements.copy()
         while len(elements_copy) > 0:
+            # Get two random elements
             random_elements = sample(elements_copy, 2)
+            # If their types are differrent swap them and remove them from elements array copy
             if random_elements[0].elem_type is not random_elements[1].elem_type:
                 random_elements[0].swap(random_elements[1])
                 elements_copy.remove(random_elements[0])
@@ -221,9 +274,11 @@ class Base(Tk):
         Effect that makes the elements scatter randomly on the base image
         :return: None
         """
+        # Make all elements coordinates invalid
         for e in self.elements:
             e.x, e.y = -1, -1
 
+        # Find random free cell for each element
         for e in self.elements:
             x, y = self.get_free_cell()
             e.draw(x, y)

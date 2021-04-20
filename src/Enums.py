@@ -5,16 +5,16 @@ class Effects(Enum):
     """
     Effects of two-dimensional automata effects (the way the elements are moved)
     """
-    """ Elements are not moving """
     PAUSE = 0
-    """ Elements are moving in random directions """
+    """ Elements are not moving """
     RANDOM = 1
-    """ Elements are sliding to the left or right, based on their type """
+    """ Elements are moving in random directions """
     ARRANGE = 2
-    """ Elements of different types are swapping places """
+    """ Elements are sliding to the left or right, based on their type """
     ALTERNATE = 3
-    """ Elements are dispersed randomly """
+    """ Elements of different types are swapping places """
     SCATTER = 4
+    """ Elements are dispersed randomly """
 
 
 class Ways(Enum):
