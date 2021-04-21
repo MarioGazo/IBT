@@ -58,7 +58,7 @@ class Base(Tk):
         self.generate_elements(round(self.cells_y * self.cells_x * 0.1))
 
         # Start movement routine
-        self.effect = Effects.RANDOM
+        self.effect = Effects.FOUR_WAY
         self.movement()
         self.mainloop()
 
@@ -71,9 +71,9 @@ class Base(Tk):
         try:
             # Map the effects to pressed keys
             self.effect = {
-                '1': Effects.RANDOM,
-                '2': Effects.ARRANGE,
-                '3': Effects.ALTERNATE,
+                '1': Effects.FOUR_WAY,
+                '2': Effects.FOUR_WAY_TYPE,
+                '3': Effects.SWAP_TYPE,
                 '4': Effects.SCATTER,
                 '0': Effects.PAUSE
             }[event.char]
@@ -157,9 +157,9 @@ class Base(Tk):
         try:
             # Map the effects to functions, call the appropriate one
             {
-                Effects.RANDOM: self.move_4_ways,
-                Effects.ARRANGE: self.move_4_ways,
-                Effects.ALTERNATE: self.alternate,
+                Effects.FOUR_WAY: self.move_4_ways,
+                Effects.FOUR_WAY_TYPE: self.move_4_ways,
+                Effects.SWAP_TYPE: self.alternate,
                 Effects.SCATTER: self.scatter,
             }[self.effect]()
         except KeyError:
@@ -211,7 +211,7 @@ class Base(Tk):
         :param e: considered element
         :return: shuffled array of ways
         """
-        if self.effect is Effects.ARRANGE:
+        if self.effect is Effects.FOUR_WAY_TYPE:
             # Arrange effect is active
             if e.elem_type == ElementTypes.LETTER:
                 # Letter can't move to the left
@@ -241,7 +241,7 @@ class Base(Tk):
             3: lambda x: self.try_left(x)
         }
 
-        # Iterate thgough all elements, get
+        # Iterate through all elements, get
         for e in self.elements:
             # Get the movement options, this is where the two effects are distinguished
             options = self.get_options(e)
@@ -258,12 +258,12 @@ class Base(Tk):
         Effect based on type of the elements, the point is to swap position of two elements of different type
         :return: None
         """
-        # Create a copy of the elements aray, so elements can be popped
+        # Create a copy of the elements array, so elements can be popped
         elements_copy = self.elements.copy()
         while len(elements_copy) > 0:
             # Get two random elements
             random_elements = sample(elements_copy, 2)
-            # If their types are differrent swap them and remove them from elements array copy
+            # If their types are different swap them and remove them from elements array copy
             if random_elements[0].elem_type is not random_elements[1].elem_type:
                 random_elements[0].swap(random_elements[1])
                 elements_copy.remove(random_elements[0])

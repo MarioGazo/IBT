@@ -7,11 +7,11 @@ class Effects(Enum):
     """
     PAUSE = 0
     """ Elements are not moving """
-    RANDOM = 1
+    FOUR_WAY = 1
     """ Elements are moving in random directions """
-    ARRANGE = 2
+    FOUR_WAY_TYPE = 2
     """ Elements are sliding to the left or right, based on their type """
-    ALTERNATE = 3
+    SWAP_TYPE = 3
     """ Elements of different types are swapping places """
     SCATTER = 4
     """ Elements are dispersed randomly """
