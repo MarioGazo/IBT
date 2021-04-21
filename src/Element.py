@@ -39,7 +39,7 @@ class Element:
             # Element is of type LETTER, get random letter from A to Z
             self.symbol = choice(ascii_uppercase)
         elif elem_type == ElementTypes.NUMBER:
-            # Element is of type NUMBER, get random nuber from 0 - 9
+            # Element is of type NUMBER, get random number from 0 - 9
             self.symbol = randrange(10)
 
         # Calculate the pixel position of the element on the base picture and put it onto it
