@@ -159,7 +159,7 @@ class Base(Tk):
             {
                 Effects.FOUR_WAY: self.move_4_ways,
                 Effects.FOUR_WAY_TYPE: self.move_4_ways,
-                Effects.SWAP_TYPE: self.alternate,
+                Effects.SWAP_TYPE: self.swap,
                 Effects.SCATTER: self.scatter,
             }[self.effect]()
         except KeyError:
@@ -253,7 +253,7 @@ class Base(Tk):
                 if ways[option](e):
                     break
 
-    def alternate(self) -> None:
+    def swap(self) -> None:
         """
         Effect based on type of the elements, the point is to swap position of two elements of different type
         :return: None
