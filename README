@@ -1,17 +1,17 @@
-Autor: Mário Gažo (xgazom00@vutbr.cz), VUT FIT
-Projekt: Bakalárska práca, Multidimentional automata and their applications in art
-Interpret: Python 3.7+ (https://www.python.org/)
+Author: Mário Gažo (xgazom00@vutbr.cz), VUT FIT
+Projekt: Bachelors Thesis, Multidimentional automata and their applications in art
+Language: Python 3.7+ (https://www.python.org/)
 
-Adresár s aplikáciou:
-	/requirements.txt - súbor obsahuje zoznam externých knižníc
-	/images - ukážkové obrázky na ktorých som projekt testoval
-	/src - skripty v jazyku Python
+App folder:
+	/requirements.txt - list of external libraries
+	/images - test pictures
+	/src - Python scripts
 
-Návod na spustenie projektu:
-	1. Inštalácia externých knižníc príkazom:
+How to start:
+	1. External library instalation:
 		pip install -r requirements.txt
-	2. Spustenie projektu z adresára s aplikáciou príkazom:
-		python src/main.py <cesta k obrázku>
-		príklady na ukážkových obrázkoch:
+	2. Project start from root folder:
+		python src/main.py <path to image>
+		examples:
 			python src/main.py images/remb.jpg
 			python src/main.py images/hands.jpg
